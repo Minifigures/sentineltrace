@@ -82,3 +82,6 @@ spark-warehouse/
 
 # ---- Foundry cassettes are committed (deterministic local agent), but raw creds are not ----
 .azure/
+metastore_db/
+derby.log
+artifacts/
