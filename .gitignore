@@ -1,0 +1,84 @@
+# ---- Secrets / env (never commit real env; template stays committable) ----
+.env
+.env.*
+!.env.example
+
+# ---- Private / internal docs (NEVER commit to a public repo) ----
+PRD.md
+docs/PRD*.md
+TECHNICAL_ARCHITECTURE.md
+ARCHITECTURE.md
+docs/TECHNICAL_ARCHITECTURE*.md
+docs/ARCHITECTURE*.md
+DEMO_SCRIPT.md
+docs/DEMO*.md
+docs/REHEARSAL*.md
+DEVPOST_SUBMISSION.md
+docs/DEVPOST*.md
+docs/SUBMISSION*.md
+ROADMAP.md
+docs/ROADMAP*.md
+docs/INTERNAL*.md
+NOTES.md
+TODO.md
+CLAUDE_NOTES.md
+SESSION_NOTES.md
+docs/HANDOFF*.md
+docs/ASSUMPTIONS.md
+# SentinelTrace internal planning memos (live in the parent folder, never in-repo)
+SentinelTrace_Build_Plan.md
+SentinelTrace_Case_Study.md
+SentinelTrace_Phased_Execution_Plan.md
+
+# ---- AI-tool / handoff docs (NEVER commit) ----
+COWORK.md
+COWORK*.md
+CLAUDE.md
+AGENTS.md
+.cursorrules
+.windsurfrules
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+.uv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+
+# ---- Scala / sbt / JVM ----
+target/
+project/target/
+project/project/
+.bloop/
+.metals/
+.bsp/
+*.class
+
+# ---- Node / Next.js ----
+node_modules/
+.next/
+out/
+.vercel/
+
+# ---- Data / local lakehouse artifacts ----
+data/
+output/
+mlruns/
+spark-warehouse/
+*.log
+.DS_Store
+
+# ---- Terraform ----
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+
+# ---- Foundry cassettes are committed (deterministic local agent), but raw creds are not ----
+.azure/
