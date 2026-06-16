@@ -1,0 +1,13 @@
+[project]
+name = "synthfix"
+version = "0.1.0"
+description = "Synthetic FIX 4.4 order/execution generator with labeled market-abuse scenarios"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
