@@ -1,0 +1,13 @@
+[project]
+name = "sentineltrace-ml"
+version = "0.1.0"
+description = "Calibrated, SHAP-explained, conformal abuse scorer for SentinelTrace alerts"
+requires-python = ">=3.11"
+dependencies = ["scikit-learn>=1.4", "shap>=0.44", "numpy", "pandas"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+pythonpath = [".", "../generator"]
+testpaths = ["tests"]
