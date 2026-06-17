@@ -1,6 +1,6 @@
 package com.sentineltrace
 
-import com.sentineltrace.detectors.{FrontRunning, Momentum, Spoofing, WashTrade}
+import com.sentineltrace.detectors.{FrontRunning, MarkingTheClose, Momentum, Spoofing, WashTrade}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -30,16 +30,25 @@ class DetectorIsolationSpec extends AnyFlatSpec with Matchers {
     cancelRatio = 0.0, orderToTradeRatio = 1.0, qtyImbalance = -0.23,
     priceMoveBps = 2.9, roundTripGainBps = 1.4)
 
+  // escalating buy waves in the closing window; final print at the high (secsToClose small)
+  private val marking = base("A-005").copy(
+    nOrders = 3L, nCancels = 2L, nExecs = 1L, buyQty = 1500L, sellQty = 0L, distinctPrices = 4L,
+    cancelRatio = 2.0 / 3.0, orderToTradeRatio = 3.0, qtyImbalance = 1.0,
+    firstPx = 140.01, lastPx = 140.03, minPx = 140.01, maxPx = 140.03,
+    priceMoveBps = 2.0, secsToClose = 5.0)
+
   private val detectors: Map[String, GoldFeatures => Option[Alert]] = Map(
     "SPOOFING" -> (g => Spoofing.detect(g, 0L)),
     "WASH_TRADE" -> (g => WashTrade.detect(g, 0L)),
     "FRONT_RUNNING" -> (g => FrontRunning.detect(g, 0L)),
-    "MOMENTUM_IGNITION" -> (g => Momentum.detect(g, 0L))
+    "MOMENTUM_IGNITION" -> (g => Momentum.detect(g, 0L)),
+    "MARKING_THE_CLOSE" -> (g => MarkingTheClose.detect(g, 0L))
   )
 
   private val windows: Map[String, GoldFeatures] = Map(
     "SPOOFING" -> spoof, "WASH_TRADE" -> wash,
-    "FRONT_RUNNING" -> front, "MOMENTUM_IGNITION" -> momentum)
+    "FRONT_RUNNING" -> front, "MOMENTUM_IGNITION" -> momentum,
+    "MARKING_THE_CLOSE" -> marking)
 
   "each detector" should "fire on its own archetype and stay silent on the other three" in {
     for ((name, detect) <- detectors; (winName, win) <- windows) {
