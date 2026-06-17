@@ -1,6 +1,12 @@
 import random
 
-from synthfix.scenarios import front_running, momentum_ignition, spoofing, wash_trade
+from synthfix.scenarios import (
+    front_running,
+    marking_the_close,
+    momentum_ignition,
+    spoofing,
+    wash_trade,
+)
 
 from pipeline.transforms.bronze import to_bronze
 from pipeline.transforms.gold import to_gold
@@ -49,3 +55,19 @@ def test_gold_front_running_has_positive_round_trip_gain(spark):
     # abuser bought low then sold high in the same window => realized gain
     assert win["round_trip_gain_bps"] > 0
     assert abs(win["qty_imbalance"]) < 1e-6  # balanced round trip
+
+
+def test_gold_marking_the_close_is_near_session_close_with_upward_walk(spark):
+    day, close = 86_400_000, 57_600_000
+    day_base = (1_718_500_000_000 // day) * day
+    t0 = day_base + close - 50_000  # 50s before the session close
+    events, _ = marking_the_close(
+        random.Random(1), t0, "A-005", "ACC-A-005", "RY", "TSX", 140.0, "sc-mtc"
+    )
+    raw = [e.to_dict() for e in events]
+    gold = to_gold(to_silver(to_bronze(spark, raw)))
+    rows = gold.filter((gold.trader_id == "A-005") & (gold.symbol == "RY")).collect()
+    assert rows
+    near = min(rows, key=lambda r: r["secs_to_close"])
+    assert 0 <= near["secs_to_close"] <= 120  # window sits in the closing period
+    assert max(r["price_move_bps"] for r in rows) > 0  # price walked up into the close

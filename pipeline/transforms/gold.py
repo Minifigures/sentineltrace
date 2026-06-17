@@ -14,10 +14,16 @@ from pyspark.sql import functions as F
 
 _KEYS = ["trader_id", "symbol", "window_start"]
 
+_DAY_MS = 86_400_000
+_CLOSE_MS_OF_DAY = 57_600_000  # 16:00 session close (synthetic, UTC-naive); marking-the-close timing
+
 
 def to_gold(silver: DataFrame, window_ms: int = 60_000) -> DataFrame:
     window_start = (F.floor(F.col("transact_time") / F.lit(window_ms)) * window_ms).cast("long")
-    g = silver.withColumn("window_start", window_start)
+    g = silver.withColumn("window_start", window_start).withColumn(
+        "_secs_to_close",
+        (F.lit(_CLOSE_MS_OF_DAY) - (F.col("transact_time") % F.lit(_DAY_MS))) / 1000.0,
+    )
     is_new = F.col("event_kind") == "NEW"
     is_exec = F.col("event_kind") == "EXEC"
 
@@ -30,6 +36,7 @@ def to_gold(silver: DataFrame, window_ms: int = 60_000) -> DataFrame:
             F.sum(F.when(is_new & F.col("is_buy"), F.col("order_qty")).otherwise(0)).alias("buy_qty"),
             F.sum(F.when(is_new & ~F.col("is_buy"), F.col("order_qty")).otherwise(0)).alias("sell_qty"),
             F.countDistinct("price").alias("distinct_prices"),
+            F.min("_secs_to_close").alias("secs_to_close"),  # closest approach to session close
         )
     )
 

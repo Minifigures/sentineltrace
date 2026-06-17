@@ -26,5 +26,6 @@ final case class GoldFeatures(
     buyVwap: Double = 0.0,
     sellVwap: Double = 0.0,
     priceMoveBps: Double = 0.0,
-    roundTripGainBps: Double = 0.0
+    roundTripGainBps: Double = 0.0,
+    secsToClose: Double = 1e9 // seconds from the window to session close; large == not near close
 )
