@@ -17,5 +17,14 @@ final case class GoldFeatures(
     distinctPrices: Long,
     cancelRatio: Double,
     orderToTradeRatio: Double,
-    qtyImbalance: Double
+    qtyImbalance: Double,
+    // price features (default 0.0 so older call sites and pre-enrichment rows still construct)
+    firstPx: Double = 0.0,
+    lastPx: Double = 0.0,
+    minPx: Double = 0.0,
+    maxPx: Double = 0.0,
+    buyVwap: Double = 0.0,
+    sellVwap: Double = 0.0,
+    priceMoveBps: Double = 0.0,
+    roundTripGainBps: Double = 0.0
 )
