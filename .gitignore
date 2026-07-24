@@ -85,3 +85,6 @@ spark-warehouse/
 metastore_db/
 derby.log
 artifacts/
+
+# Scala CLI / IDE build output
+.scala-build/
